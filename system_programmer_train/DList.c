@@ -1,5 +1,5 @@
 /****************************************
- *	双向链表的实现
+ *	双向循环链表的实现
  *	DList.c
  *	Gene At 2014-04-21
  ****************************************/
@@ -23,10 +23,7 @@ pmyNode CreateNode(int data)
 
 pmyNode CreateList(int head)
 {
-	pmyNode pnode = (pmyNode)malloc(sizeof(MyNode));
-	pnode->data = head;
-	pnode->left = pnode->right = pnode;
-	return pnode;
+	return CreateNode(head);
 }
 
 pmyNode InsertNode(pmyNode node, int data)
@@ -57,7 +54,6 @@ pmyNode FindNode(pmyNode node, int data)
 pmyNode DelectNode(pmyNode node, int data)
 {
 	pmyNode pnode = FindNode(node, data);
-
 	if(NULL == pnode)	return NULL;
 
 	pnode->left->right = pnode->right;
@@ -89,20 +85,6 @@ void PrintList(pmyNode node)
 	while(pnode != node && pnode != NULL) {
 		printf("%d	", pnode->data);
 		pnode = pnode->right;
-	}
-	printf("\n");
-}
-
-void ReverPrintList(pmyNode node)
-{
-	pmyNode pnode;
-
-	if(NULL == node)	return;
-
-	pnode = node->left;
-	while(pnode != node){
-		printf("%d	", pnode->data);
-		pnode = pnode->left;
 	}
 	printf("\n");
 }
@@ -146,7 +128,6 @@ void printfHowUse()
     printf("3   FindNode\n");
     printf("4   GetLenght\n");
     printf("5   PrintList\n");
-    printf("6   ReverPrintList\n");
     printf("7   ClearList\n");
     printf("0   quit\n\n");
     printf("===========================\n");
@@ -187,9 +168,6 @@ int main(void)
 				break;
 			case 5:
 				PrintList(list);
-				break;
-			case 6:
-				ReverPrintList(list);
 				break;
 			case 7:
 				ClearList(list);
