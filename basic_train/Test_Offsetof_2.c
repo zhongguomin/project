@@ -12,9 +12,9 @@ typedef struct book {
     char   publish[30];
     char   isbn[20];
     char   local[20];
-    int    amount;    
+    int    amount;
     float  price;
-
+	double weight;
     struct book *next;
 } BOOK;
 
@@ -27,23 +27,32 @@ typedef struct book {
 int main(void)
 {
 
-        PR_SIZEOF(BOOK, name);
-        PR_SIZEOF(BOOK, author);
-        PR_SIZEOF(BOOK, publish);
-        PR_SIZEOF(BOOK, isbn);
-        PR_SIZEOF(BOOK, local);
-        PR_SIZEOF(BOOK, amount);
-        PR_SIZEOF(BOOK, price);
-        PR_SIZEOF(BOOK, next);
+		printf("\n");
+        PR_SIZEOF(BOOK, name);				// 50
+        PR_SIZEOF(BOOK, author);			// 20
+        PR_SIZEOF(BOOK, publish);			// 30
+        PR_SIZEOF(BOOK, isbn);				// 20
+        PR_SIZEOF(BOOK, local);				// 20
+        PR_SIZEOF(BOOK, amount);			// 4
+        PR_SIZEOF(BOOK, price);				// 4
+        PR_SIZEOF(BOOK, weight);			// 8
+        PR_SIZEOF(BOOK, next);				// 8
 
-        PR_OFFSET(BOOK, name);
-        PR_OFFSET(BOOK, author);
-        PR_OFFSET(BOOK, publish);
-        PR_OFFSET(BOOK, isbn);
-        PR_OFFSET(BOOK, local);
-        PR_OFFSET(BOOK, amount);
-        PR_OFFSET(BOOK, price);
-        PR_OFFSET(BOOK, next);
+		printf("\n");
+
+        PR_OFFSET(BOOK, name);				// 0
+        PR_OFFSET(BOOK, author);			// 50
+        PR_OFFSET(BOOK, publish);			// 70
+        PR_OFFSET(BOOK, isbn);				// 100
+        PR_OFFSET(BOOK, local);				// 120
+        PR_OFFSET(BOOK, amount);			// 140
+        PR_OFFSET(BOOK, price);				// 144
+        PR_OFFSET(BOOK, weight);			// 152
+        PR_OFFSET(BOOK, next);				// 160
+
+		printf("\n");
 
         return (0);
 }
+
+
