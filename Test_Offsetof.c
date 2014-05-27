@@ -26,6 +26,15 @@
  *
  * ５分钟搞定内存字节对齐
  * http://blog.csdn.net/hairetz/article/details/4084088
+ *
+ * 结构体成员偏移量的计算
+ * http://blog.csdn.net/wenchao126/article/details/7940643
+ *
+ * 结构体中变量偏移量的计算方法
+ * http://hi.baidu.com/calrincalrin/item/ca9a310c533d76cd905718c4
+ *
+ * 用一个宏求结构体某个变量的相对偏移量  
+ * http://blog.163.com/zjf_to/blog/static/20142906120121884156104/
  */
 
 #include <stdio.h>
@@ -33,6 +42,9 @@
 #define offsetof(TYPE, MEMBER) (int)&(((TYPE*)0)->MEMBER)
 
 struct _test {
+	char s[12];
+	char str[2];
+	long f;
 	int a;
 	int b;
 	int c;
