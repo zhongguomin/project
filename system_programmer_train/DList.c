@@ -89,6 +89,32 @@ void PrintList(pmyNode node)
 	printf("\n");
 }
 
+int GetMaxData(pmyNode node)
+{
+	int max = 0;
+	pmyNode pnode = node->right;
+
+	while(pnode != NULL && pnode != node) {
+		if(pnode->data > max)	max = pnode->data;
+		pnode = pnode->right;
+	}
+
+	return max;
+}
+
+int GetListSum(pmyNode node)
+{
+	int sum = 0;
+	pmyNode pnode = node->right;
+
+	while(pnode != NULL && pnode != node) {
+		sum += pnode->data;
+		pnode = pnode->right;
+	}
+
+	return sum;
+}
+
 void DelectList(pmyNode node)
 {
 	if(NULL == node)	return;
@@ -129,6 +155,8 @@ void printfHowUse()
     printf("4   GetLenght\n");
     printf("5   PrintList\n");
     printf("7   ClearList\n");
+    printf("8   GetMaxData\n");
+    printf("9   GetListSum\n");
     printf("0   quit\n\n");
     printf("===========================\n");
 }
@@ -171,6 +199,12 @@ int main(void)
 				break;
 			case 7:
 				ClearList(list);
+				break;
+			case 8:
+				printf("The list's max is %d", GetMaxData(list));
+				break;
+			case 9:
+				printf("The list's sum is %d", GetListSum(list));
 				break;
 			case 0:
 				DelectList(list);
