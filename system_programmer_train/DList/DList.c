@@ -6,12 +6,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "DList.h"
 
-typedef struct MyNode {
-	int data;
-	struct MyNode *left;
-	struct MyNode *right;
-} MyNode, *pmyNode;
 
 pmyNode CreateNode(int data) 
 {
