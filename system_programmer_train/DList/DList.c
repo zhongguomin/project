@@ -25,13 +25,12 @@ pmyNode CreateList(int head)
 pmyNode InsertNode(pmyNode node, int data)
 {
 	pmyNode pnode = CreateNode(data);
-	pmyNode ptmp = node->left;
 
 	node->left->right = pnode;
-	node->left = pnode;
-	
 	pnode->right = node;
-	pnode->left = ptmp;
+
+	pnode->left = node->left;
+	node->left = pnode;
 
 	return node;
 }
