@@ -13,6 +13,11 @@ static int print_int(void* ctx, void* data)
 	return 0;
 }
 
+static int print_string(void* ctx, void* data)
+{
+	printf("%s \n", (char*)data);
+}
+
 static int sum_cb(void* ctx, void* data)
 {
 	long* result = ctx;
@@ -27,6 +32,7 @@ int main(int argc, char *argv[])
 
 	DList* dlist = dlist_create();
 
+	/*
 	for(i=0; i<n; i++) {
 		dlist_append(dlist, (void*)i);
 	}
@@ -35,6 +41,11 @@ int main(int argc, char *argv[])
 	dlist_foreach(dlist, sum_cb, &sum);
 
 	printf("\nsum=%d\n", sum);
+	*/
+
+	dlist_append(dlist, "hello");
+	dlist_append(dlist, "world");
+	dlist_foreach(dlist, print_string, NULL);
 
 	dlist_destroy(dlist);
 
