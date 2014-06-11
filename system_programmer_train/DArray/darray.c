@@ -49,6 +49,7 @@ static int darray_expand(DArray* thiz, int need)
 	if((thiz->size + need) > thiz->alloc_size) {
 		int alloc_size = thiz->alloc_size + (thiz->alloc_size>>1) + MIN_PRE_ALLOCATE_NR;
 
+		// void** data
 		void** data = (void**)realloc(thiz->data, sizeof(void*) * alloc_size);
 		if(data != NULL) {
 			thiz->data = data;
@@ -70,30 +71,14 @@ int darray_append(DArray* thiz, void* data)
     return darray_insert(thiz, -1, data);
 }
 
-
-/*
-------- cursor = -1, thiz->size = 0
-======= cursor = 0, thiz->size = 0
-------- cursor = -1, thiz->size = 1
-======= cursor = 1, thiz->size = 1
-------- cursor = -1, thiz->size = 2
-======= cursor = 2, thiz->size = 2
-------- cursor = -1, thiz->size = 3
-======= cursor = 3, thiz->size = 3
-------- cursor = -1, thiz->size = 4
-======= cursor = 4, thiz->size = 4
-------- cursor = -1, thiz->size = 5
-======= cursor = 5, thiz->size = 5
-*/
 int darray_insert(DArray* thiz, int index, void* data)
 {
 	int ret = -1;
 	unsigned int cursor = index;
 
 	if(thiz == NULL)	return -1;
-printf("------- cursor = %d, thiz->size = %d\n", cursor, thiz->size);
+	// cursor
 	cursor = cursor < thiz->size ? cursor : thiz->size;
-printf("======= cursor = %d, thiz->size = %d\n", cursor, thiz->size);
 
 	if(darray_expand(thiz, 1) == 0) {
 		int i = 0;

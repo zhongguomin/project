@@ -29,4 +29,10 @@ int darray_append(DArray* thiz, void* data);
 int drray_get_by_index(DArray* thiz, int index, void** data);
 int drray_set_by_index(DArray* thiz, int index, void* data);
 
+
+// sort
+int bubble_sort(void** array, int nr, DataCompareFunc cmp);
+int quick_sort(void** array, size_t nr, DataCompareFunc cmp);
+int merge_sort(void** array, size_t nr, DataCompareFunc cmp);
+
 #endif	// DARRAY_H
