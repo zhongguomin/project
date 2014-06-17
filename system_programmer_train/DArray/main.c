@@ -184,6 +184,44 @@ void sort_test(SortFunc sort)
 	return;
 }
 
+int qsearch(void** array, size_t nr, void* data, DataCompareFunc cmp)
+{
+	int low = 0;
+	int mid = 0;
+	int high = nr - 1;
+	int result = 0;
+
+	if(array == NULL)		return -1;
+	if(cmp == NULL)			return -1;
+
+	while(low <= high) {
+		mid = low + ((high - low) >> 1);
+		result = cmp(array[mid], data);
+
+		if(result == 0) {
+			return mid;
+		} else if(result < 0){
+			low = mid + 1;
+		} else {
+			high = mid - 1;
+		}
+	}
+
+	return -1;
+}
+
+int unique_print_int(void* ctx, void* data)
+{
+	if(*(int*)ctx != (int)data) {
+		*(int*)ctx = (int)data;
+		printf("%d ", (int)data);
+	}
+
+	return 0;
+}
+// darray_foreach(darray, unique_print_int, &data);
+
+
 int main(int argc, char* argv[])
 {
 	int i = 0;
