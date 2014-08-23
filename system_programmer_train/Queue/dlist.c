@@ -29,9 +29,9 @@ void dlist_destroy_data(DList* thiz, void* data)
 	return;
 }
 
-DlistNode* dlist_create_node(DList* thiz, void* data) 
+DListNode* dlist_create_node(DList* thiz, void* data) 
 {
-	DlistNode* node = malloc(sizeof(DListNode));
+	DListNode* node = malloc(sizeof(DListNode));
 	if(node != NULL) {
 		node->prev = NULL;
 		node->next = NULL;
@@ -93,7 +93,7 @@ Ret dlist_insert(DList* thiz, size_t index, void* data)
 	return_val_if_fail(thiz != NULL, RET_INVALID_PARAMS);
 
 	do {
-		if (node = dlist_create_node(thiz, data) == NULL) {
+		if ((node = dlist_create_node(thiz, data)) == NULL) {
 			ret = RET_OOM;
 			break;
 		}
@@ -120,14 +120,14 @@ Ret dlist_insert(DList* thiz, size_t index, void* data)
 			cursor->next = node;
 			node->prev = cursor;
 		}
-	} while(0)
+	} while(0);
 
 	return ret;
 }
 
 Ret dlist_prepend(DList* thiz, void* data)
 {
-	return dlsit_insert(thiz, 0, data);
+	return dlist_insert(thiz, 0, data);
 }
 
 Ret dlist_append(DList* thiz, void* data)
@@ -140,7 +140,7 @@ Ret dlist_delete(DList* thiz, size_t index)
 	Ret ret = RET_OK;
 	DListNode* cursor = NULL;
 	
-	return_val_if_return(thiz != NULL, RET_INVALID_PARAMS);
+	return_val_if_fail(thiz != NULL, RET_INVALID_PARAMS);
 
 	cursor = dlist_get_node(thiz, index, 0);
 
@@ -165,19 +165,107 @@ Ret dlist_delete(DList* thiz, size_t index)
 
 			dlist_destroy_node(thiz, cursor);
 		}
-	} while(0)
+	} while(0);
 	
 	return ret;
 }
 
+Ret dlist_get_by_index(DList* thiz, size_t index, void** data)
+{
+	DListNode* cursor = NULL;
 
+	return_val_if_fail(thiz != NULL && data != NULL, RET_INVALID_PARAMS);
 
+	cursor = dlist_get_node(thiz, index, 0);
+	if (cursor != NULL) {
+		data = cursor->data;
+	}
 
+	return cursor != NULL ? RET_OK : RET_INVALID_PARAMS;
+}
 
+Ret dlist_set_by_index(DList* thiz, size_t index, void* data)
+{
+	DListNode* cursor = NULL;
 
+	return_val_if_fail(thiz != NULL, RET_INVALID_PARAMS);
 
+	cursor = dlist_get_node(thiz, index, 0);
+	if (cursor != NULL) {
+		cursor->data = data;
+	}
 
+	return cursor != NULL ? RET_OK : RET_INVALID_PARAMS;
+}
 
+size_t dlist_length(DList* thiz)
+{
+	size_t length = 0;
+	DListNode* iter = NULL;
+
+	return_val_if_fail(thiz != NULL, 0);
+
+	iter = thiz->first;
+	while(iter != NULL) {
+		length++;
+		iter = iter->next;
+	}
+
+	return length;
+}
+
+Ret dlist_foreach(DList* thiz, DataVisitFunc visit, void* ctx)
+{
+	Ret ret = RET_OK;
+	DListNode* iter = NULL;
+
+	return_val_if_fail(thiz != NULL && visit != NULL, RET_INVALID_PARAMS);
+
+	iter = thiz->first;
+	while(iter != NULL && ret != RET_STOP) {
+		ret = visit(ctx, iter->data);
+		iter = iter->next;
+	}
+
+	return ret;
+}
+
+int dlist_find(DList* thiz, DataCompareFunc cmp, void* ctx)
+{
+	int i = 0;
+	DListNode* iter = NULL;
+
+	return_val_if_fail(thiz != NULL && cmp != NULL, -1);
+
+	iter = thiz->first;
+	while (iter != NULL) {
+		if (cmp(ctx, iter->data) == 0)	break;
+		i++;
+		iter = iter->next;
+	}
+	
+	return i;
+}
+
+void dlist_destroy(DList* thiz)
+{
+	DListNode* iter = NULL;
+	DListNode* next = NULL;
+
+	return_if_fail(thiz != NULL);
+
+	iter = thiz->first;
+	while (iter != NULL) {
+		next = iter->next;
+		dlist_destroy_node(thiz, iter);
+		iter = next;
+	}
+
+	thiz->first = NULL;
+	SAFE_FREE(thiz);
+
+	return;
+}
 
 
 
