@@ -165,6 +165,71 @@ static void allocator_self_manage_free(Allocator* thiz, void* ptr) {
 	return;
 }
 
+static void* allocator_self_manage_realloc(Allocator* thiz, void* ptr, size_t size) {
+	void* new_ptr = NULL;
+
+	if (ptr != NULL) {
+		size_t old_size = *(size_t*)((char*)ptr - sizeof(size_t)) - sizeof(size_t);
+		if (old_size >= size && old_size <= (size + MIN_SIZE)) {
+			return ptr;
+		}
+		
+		new_ptr = allocator_alloc(thiz, size);
+		if (new_ptr != NULL) {
+			memcpy(new_ptr, ptr, size  < old_size ? size : old_size);
+			allocator_free(thiz, ptr);
+		}
+	} else {
+		new_ptr = allocator_alloc(thiz, size);
+	}
+
+	return new_ptr;
+}
+
+static void allocator_self_manage_destroy(Allocator* thiz) {
+	if (thiz != NULL) {
+		PrivInfo* priv = (PrivInfo*)thiz->priv;
+		priv->free_list = NULL;
+		priv->buffer = NULL;
+		free(thiz);
+	}
+
+	return;
+}
+
+Allocator* allocator_self_manage_create(void* buffer, size_t length) {
+	Alocator* thiz = NULL;
+
+	return_val_if_fail(thiz != NULL && length > MIN_SIZE, NULL);
+
+	thiz = (Allocator*)calloc(1, sizeof(Allocator) + sizeof(PrivInfo));
+
+	if (thiz != NULL) {
+		PrivInfo* priv = (PrivInfo)thiz->priv;
+		
+		thiz->calloc = allocator_self_manage_calloc;
+		thiz->alloc = allocator_self_manage_alloc;
+		thiz->realloc = allocator_self_manage_realoc;
+		thiz->free = allocator_self_free;
+		thiz->destroy = allocator_self_manage_destroy;
+
+		priv->buffer = buffer;
+		priv->length = length;
+		priv->free3_list = (FreeNode*)buffer;
+		priv->free_list->prev = NULL;
+		priv->free_list->next = NULL;
+		priv->free_list->length = length;
+	}
+
+	return thiz;
+}
+
+
+int main(int argc, char* argv[]) {
+
+
+	return 0;
+}
 
 
 
