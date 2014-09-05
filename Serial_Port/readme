@@ -15,3 +15,37 @@
 6	linux下串口编程简单实例
 	http://wenku.baidu.com/view/036f1a35ee06eff9aef807ae.html
 
+
+BigPenguin 2014-9-5 15:44:48
+http://supportforums.blackberry.com/t5/Java-Development/Bluetooth-Serial-Port-InputStream-read-blocks-and-InputStream/td-p/47413
+不仅串口可能阻塞,蓝牙通讯socket亦是如此.
+
+http://stackoverflow.com/questions/611760/java-inputstream-read-blocking
+关于"java inputstream read blocking"的讨论
+
+http://stackoverflow.com/questions/2623824/how-to-handle-timeout-on-read-with-java-comm-api
+讨论即解决方法
+http://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html
+
+http://www.developer.com/java/article.php/3837316/Non-Blocking-IO-Made-Possible-in-Java.htm
+从另外线程打断read(java实现)
+
+http://docs.oracle.com/cd/E17802_01/products/products/javacomm/reference/api/javax/comm/SerialPort.html
+javax.comm.SerialPort执行带超时的read
+
+http://stackoverflow.com/questions/11805300/rxtx-java-inputstream-does-not-return-all-the-buffer
+建议用available()检测是否可读
+
+http://cboard.cprogramming.com/c-programming/98649-serial-port-read-blocking.html
+即使在jni里,这种read模式也会阻塞,跟逻辑线路无关.
+
+http://blog.csdn.net/l_serein/article/details/6672054
+Socket中InputStream的read方法的阻塞特性 
+
+http://stackoverflow.com/questions/6579539/how-to-unblock-inputstream-read-on-android
+讨论即解决方法
+
+附注:
+基于2点可能(1)android框架可能并没有完全执行示例代码的实现;(2)示例代码可能有bug, 最好能自己写jni C/C++实现,容易完全无限制控制.
+
+

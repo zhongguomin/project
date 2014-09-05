@@ -29,15 +29,16 @@ void set_speed(int fd, int speed) {
 	tcgetattr(fd, &Opt);
 
 	for ( i= 0;  i < sizeof(speed_arr) / sizeof(int);  i++) {
-   	if  (speed == name_arr[i]) {
-		tcflush(fd, TCIOFLUSH);
-    	cfsetispeed(&Opt, speed_arr[i]);
-    	cfsetospeed(&Opt, speed_arr[i]);
-    	status = tcsetattr(fd, TCSANOW, &Opt);
+		if (speed == name_arr[i]) {
+			tcflush(fd, TCIOFLUSH);
+			cfsetispeed(&Opt, speed_arr[i]);
+			cfsetospeed(&Opt, speed_arr[i]);
+			status = tcsetattr(fd, TCSANOW, &Opt);
 
-    	if (status != 0)
-			perror("tcsetattr fd1");
-			return;
+			if (status != 0) {
+				perror("tcsetattr fd1");
+				return;
+			}
 		}
 		tcflush(fd,TCIOFLUSH);
 	}
@@ -55,7 +56,7 @@ int set_Parity(int fd, int databits, int stopbits, int parity) {
 
 	if ( tcgetattr( fd,&options) != 0) {
 		perror("SetupSerial 1");
-		return(FALSE);
+		return -1;;
 	}
 
 	options.c_cflag &= ~CSIZE;
@@ -68,7 +69,7 @@ int set_Parity(int fd, int databits, int stopbits, int parity) {
 		break;
 	default:
 		fprintf(stderr,"Unsupported data size\n");
-		return (FALSE);
+		return -1;
 	}
 
 	switch (parity) {
@@ -95,7 +96,7 @@ int set_Parity(int fd, int databits, int stopbits, int parity) {
 		break;
 	default:
 		fprintf(stderr,"Unsupported parity\n");
-		return (FALSE);
+		return -1;
 	}
 
 	/* ÉèÖÃÍ£Ö¹Î»*/   
@@ -108,7 +109,7 @@ int set_Parity(int fd, int databits, int stopbits, int parity) {
 		break;
 	default:
 		fprintf(stderr,"Unsupported stop bits\n");
-		return (FALSE);
+		return -1;
 	}
 
 	/* Set input parity option */
@@ -121,10 +122,10 @@ int set_Parity(int fd, int databits, int stopbits, int parity) {
 	tcflush(fd,TCIFLUSH); /* Update the options and do it NOW */
 	if (tcsetattr(fd,TCSANOW,&options) != 0) {
 		perror("SetupSerial 3");
-		return (FALSE);
+		return -1;
 	}
 
-	return (TRUE);
+	return 0;
 }
 
 /**
@@ -144,7 +145,8 @@ int main(int argc, char **argv) {
 	int fd;
 	int nread;
 	char buff[512];
-	char *dev ="/dev/ttyS1";
+	//char *dev ="/dev/ttyS1";
+	char *dev ="/dev/ttyUSB0";
 
 	fd = OpenDev(dev);
 	if (fd>0) {
@@ -154,7 +156,7 @@ int main(int argc, char **argv) {
 		exit(0);
 	}
 
-	if (set_Parity(fd, 8, 1, 'N') == FALSE) {
+	if (set_Parity(fd, 8, 1, 'N') == -1) {
 		printf("Set Parity Error\n");
 		exit(1);
 	}
