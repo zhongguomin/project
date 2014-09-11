@@ -1,7 +1,6 @@
 /*
  * receive.c
- *
- * Description：ReceivedatafromSerial_Port
+ * Description：Receive data from Serial_Port
  */
 
 #include <stdio.h>
@@ -14,93 +13,98 @@
 #include <termios.h>
 #include "math.h"
 
-#define max_buffer_size 100 /*定义缓冲区最大宽度*/
+#define max_buffer_size 100
 
-int fd, s;
 
-int open_serial(int k) {
-	if ( k == 0) {
-		// fd = open("/dev/ttyS0", O_RDWR|O_NOCTTY); /*读写方式打开串口*/
+int open_serial() {
+	int fd = -1;
+
+	fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY);
+	//fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NONBLOCK);
 		
-		// fd = open("/dev/ttyUSB0", O_RDWR|O_NOCTTY); /*读写方式打开串口*/
-		fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY |  O_NONBLOCK); /*读写方式打开串口*/
-		// fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NONBLOCK); /*读写方式打开串口*/
-		
-		perror("open/dev/ttyUSB0");
-	} else {
-		fd = open("/dev/ttyS1", O_RDWR|O_NOCTTY);
-		perror("open/dev/ttyS1");
-	}
-
-	if (fd == -1) {
+	if (fd < 0) {
+		perror("open /dev/ttyUSB0");
 		return -1;
 	} 
 
-	// if(fcntl(fd, F_SETFL, FNDELAY) < 0) {
-	if(fcntl(fd, F_SETFL, 0) < 0) {
+	/*
+	if (fcntl(fd, F_SETFL, FNDELAY) < 0) {
+	//if(fcntl(fd, F_SETFL, 0) < 0) {
 		printf("fcntl failed!\n");	
 	}
+	*/
 		
+	return fd;
+}
+
+int close_serial(int fd) {
+	int ret = -1;
+	ret = close(fd);
+	if (ret < 0) {
+		printf("Closec the Device failur！\n");
+		return -1;
+	}
+
 	return 0;
 }
 
-int main() {
-	char hd[max_buffer_size], *rbuf;/*定义接收缓冲区*/
-	int flag_close, retv, i, ncount = 0;
-	struct termios opt;
-	int realdata = 0;
-
-	open_serial(0);
-
+void set_prop(int fd, struct termios opt) {
 	tcgetattr(fd, &opt);
 	cfmakeraw(&opt);
 
-	cfsetispeed(&opt,B9600);/*波特率设置为9600bps*/
-	cfsetospeed(&opt,B9600);
+	cfsetispeed(&opt, B9600);
+	cfsetospeed(&opt, B9600);
 
-	// opt.c_lflag  &= ~(ICANON | ECHO | ECHOE | ISIG);  /*Input*/
-	// opt.c_oflag  &= ~OPOST;   /*Output*/
+	// opt.c_lflag  &= ~(ICANON | ECHO | ECHOE | ISIG);  // Input
+	// opt.c_oflag  &= ~OPOST;   // Output
 
-	//
-	opt.c_cc[VTIME] = 31; /* 设置超时15 seconds*/  
-	opt.c_cc[VMIN] = 0; /* Update the options and do it NOW */
+	// opt.c_cc[VTIME] = 31; // set timeout 15 seconds
+	// opt.c_cc[VMIN] = 0; // Update the options and do it NOW 
 
-	tcsetattr(fd,TCSANOW,&opt);
-	rbuf="hd";/*数据保存*/
+	tcsetattr(fd, TCSANOW, &opt);
+}
 
-	printf("readyforreceivingdata...\n");
-	retv=read(fd,rbuf,1); /*接收数据*/
+void read_data(int fd) {
+	char hd[max_buffer_size], *rbuf;
+	int retv, i, ncount = 0;
+	int realdata = 0;
+	
+	rbuf = hd;
+	retv = read(fd, rbuf, 1);
 
 	if (retv == -1) {
-		perror("read");/*读状态标志判断*/
+		perror("read ");
+		return;
 	}
 
-	while(*rbuf !='\n') { /*判断数据是否接收完毕*/
+	while(*rbuf !='\n') {
 		ncount += 1;
 		rbuf++;
-		retv=read(fd,rbuf,1);
-		if(retv==-1) {
-			perror("read");
+
+		retv = read(fd, rbuf, 1);
+		if(retv == -1) {
+			perror("read retv .. ");
 		}
 	}
 
-	printf("Thedatareceivedis:\n");/*输出接收到的数据*/
-
 	for(i=0; i<ncount; i++) {
-		printf("%c",hd[i]);
+		printf("%c", hd[i]);
 	}
-
 	printf("\n");
+}
 
-	flag_close = close(fd);
-	if(flag_close == -1) { /*判断是否成功关闭文件*/
-		printf("ClosetheDevicefailur！\n");
-	}
+int main(int argc, char* argv[]) {
+	int fd = -1;
+	struct termios opt;
+
+	fd = open_serial();
+	if (fd == -1)	return -1;
+
+	set_prop(fd, opt);
+	read_data(fd);
+	close_serial(fd);
 
 	return 0;
 }
-
-
-
 
 

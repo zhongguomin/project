@@ -1,7 +1,6 @@
 /**
  * send.c
- *
- *  Description：senddatatoserial_Port
+ * Description：send data to serial_Port
  */
 
 #include <stdio.h>
@@ -13,56 +12,58 @@
 #include <unistd.h>
 #include <termios.h>
 
-#define max_buffer_size 100 /*定义缓冲区最大宽度*/
+#define max_buffer_size 100 
 
-int fd;
-int flag_close;
 
-int open_serial(int k) {
-	if (k == 0) {
-		// fd=open("/dev/ttyS0",O_RDWR|O_NOCTTY);/*读写方式打开串口*/
-		fd=open("/dev/ttyUSB0",O_RDWR|O_NOCTTY);/*读写方式打开串口*/
-		perror("open/dev/ttyUSB0");
-	} else {
-		fd=open("/dev/ttyS1",O_RDWR|O_NOCTTY);
-		perror("open/dev/ttyS1");
-	}
-
-	if (fd == -1) {
+int open_serial(char* path) {
+	int fd = -1;
+	if (path == NULL || strlen(path) < 0)	return -1;
+	
+	fd = open(path, O_RDWR | O_NOCTTY); 
+	if (fd < 0) {
+		printf("open %s error..!!" , path);
 		return -1;
-	} else {
-		return 0;
+	}
+		
+	return fd;
+}
+
+void close_serial(int fd) {
+	if (close(fd) < 0) {
+		printf("Close the Device failur！\n");
+	}
+}
+
+void set_prop(int fd, struct termios opt) {
+	tcgetattr(fd, &opt);
+	cfmakeraw(&opt);
+
+	cfsetispeed(&opt, B9600);
+	cfsetospeed(&opt, B9600);
+	tcsetattr(fd, TCSANOW, &opt);
+}
+
+void send_data(int fd, char* data, int size) {
+	int ret = write(fd, data, size);
+	if (ret < 0) {
+		printf("write data error..!!");
 	}
 }
 
 int main(int argc, char* argv[]) {
-	char sbuf[]={"Hello,thisisaSerial_Porttest!\n"};/*待发送的内容，以\n为结束标志*/
-	int sfd,retv,i;
+	int fd = -1;
 	struct termios option;
-	int length = sizeof(sbuf);/*发送缓冲区数据宽度*/
+	// serial port
+	char path[] = "/dev/ttyS0";
+	// send data, end up with '\n'
+	char sendBuf[] = "Hello, this is a Serial_Port test data!\n";
 
-	open_serial(0); /*打开串口1*/
-	printf("readyforsendingdata...\n");/*准备开始发送数据*/
+	fd = open_serial(path);
+	if (fd < 0)	return -1;
 
-	tcgetattr(fd,&option);
-	cfmakeraw(&option);
-
-	cfsetispeed(&option,B9600);/*波特率设置为9600bps*/
-	cfsetospeed(&option,B9600);
-
-	tcsetattr(fd,TCSANOW,&option);
-	retv = write(fd,sbuf,length);/*接收数据*/
-
-	if (retv==-1) {
-		perror("write");
-	}
-
-	printf("thenumberofcharsentis%d\n",retv);
-	flag_close=close(fd);
-
-	if (flag_close == -1) {
-		printf("ClosetheDevicefailur！\n");
-	}
+	set_prop(fd, option);
+	send_data(fd, sendBuf, sizeof(sendBuf));
+	close_serial(fd);
 
 	return 0;
 }
