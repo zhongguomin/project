@@ -1,0 +1,108 @@
+diff --git a/res/layout/main.xml b/res/layout/main.xml
+index d1957dd..753e44c 100644
+--- a/res/layout/main.xml
++++ b/res/layout/main.xml
+@@ -185,4 +185,29 @@
+         android:textSize="50px" >
+     </Button>
+    </LinearLayout>
++   
++	<!--   -->
++	<LinearLayout
++		android:layout_width="fill_parent"
++		android:layout_height="wrap_content"
++		android:gravity="center_horizontal"
++		android:orientation="horizontal" >
++     <Button
++        android:id="@+id/button_uartupdate"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="@string/uartupdate"
++        android:textSize="50px" >
++    </Button>
++     <Button
++        android:id="@+id/button_posandroid"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:gravity="center"
++        android:text="@string/posandroid"
++        android:textSize="50px" >
++    </Button>
++   </LinearLayout>
++    
+ </LinearLayout>
+diff --git a/res/values/strings.xml b/res/values/strings.xml
+index 74e9771..12a43f3 100644
+--- a/res/values/strings.xml
++++ b/res/values/strings.xml
+@@ -171,6 +171,8 @@
+ 
+ 
+     <string name="serialport">"Serialport"</string>
++    <string name="uartupdate">"uart update"</string>
++    <string name="posandroid">""pos android"</string>
+     
+ 	<string name="battery">"Battery"</string>
+     <string name="chargerAcOnline">"ChargerAcOnline:"</string>
+diff --git a/src/com/thtfit/test/Main.java b/src/com/thtfit/test/Main.java
+index ce3af53..591224f 100644
+--- a/src/com/thtfit/test/Main.java
++++ b/src/com/thtfit/test/Main.java
+@@ -19,6 +19,8 @@ public class Main extends Activity implements OnClickListener {
+ 	private Button playButton, recorderButton, earplugButton;
+ 	private Button generalButton, reportButton;
+     private Button serialport,batteryButton;
++    private Button uartUpdateButton, posAndroidButton;
++    
+     /** Called when the activity is first created. */
+     @Override
+     public void onCreate(Bundle savedInstanceState) {
+@@ -42,6 +44,8 @@ public class Main extends Activity implements OnClickListener {
+ 		reportButton = (Button)findViewById(R.id.button_report);
+         serialport = (Button)findViewById(R.id.button_serialport);
+         batteryButton = (Button)findViewById(R.id.button_battery);
++        uartUpdateButton = (Button)findViewById(R.id.button_uartupdate);
++        posAndroidButton = (Button)findViewById(R.id.button_posandroid);
+ 
+ 		flashButton.setOnClickListener(this);
+ 		sdcardButton.setOnClickListener(this);
+@@ -62,7 +66,10 @@ public class Main extends Activity implements OnClickListener {
+ 
+         serialport.setOnClickListener(this);
+ 		batteryButton.setOnClickListener(this);
+-
++		
++		uartUpdateButton.setOnClickListener(this);
++		posAndroidButton.setOnClickListener(this);
++		
+ 	}
+     @Override
+     public void onClick(View v) {
+@@ -136,6 +143,26 @@ public class Main extends Activity implements OnClickListener {
+     	startActivity(new Intent(Main.this, BatteryActivity.class));
+ 		Log.d(LOG_TAG, "battery");
+ 
++	} else if(v.equals(uartUpdateButton)){
++		try{
++			Intent mIntent = new Intent();
++			ComponentName comp = new ComponentName("com.example.urat_update",
++					"com.example.urat_update.MainActivity");
++			mIntent.setComponent(comp);		
++			startActivity(mIntent);
++			}catch(Exception e){
++				Toast.makeText(this, "Don't found class", Toast.LENGTH_LONG).show();
++			}
++	} else if(v.equals(posAndroidButton)){
++		try{
++			Intent mIntent = new Intent();
++			ComponentName comp = new ComponentName("com.dspread.ui",
++					"com.dspread.ui.MainActivity");
++			mIntent.setComponent(comp);		
++			startActivity(mIntent);
++			}catch(Exception e){
++				Toast.makeText(this, "Don't found class", Toast.LENGTH_LONG).show();
++			}
+ 	}
+ 	}
+ }

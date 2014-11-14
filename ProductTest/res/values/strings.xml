@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">"ProductTest"</string>
+    <string name="title_name">"A31 Platform Product Test 1.5"</string>
+    <string name="textresult">"Test result"</string>
+	<string name="finalresult">"Finalresult"</string>
+	<string name="confirm">"Confirm"</string>
+
+    <string name="flash">NAND</string>
+    <string name="flash_test">"flash"</string>
+    <string name="flashTitle">"flash test"</string>
+    <string name="start">"start"</string>
+    <string name="stop">"stop"</string>
+	<string name="pause">"pause"</string>
+	<string name="last">"Last"</string>
+	<string name="next">"Next"</string>
+    <string name="first">"Test result"</string>
+    <string name="second">"Infomation test"</string>
+    <string name="third">"3.Compare file"</string>
+    <string name="scrollview_test">"scrollview_test"</string>
+    <string name="sdcard">Sdcard</string>
+    <string name="sdcard_test">"sdcard"</string>
+    <string name="sdTitle">"sdcard test"</string>
+    <string name="sdFirst">"Test result"</string>
+    <string name="sdSecond">"2.copy file"</string>
+    <string name="sdThird">"3.Compare file"</string>
+    <string name="sdram">"Ram"</string>
+    <string name="memoryTitle">"Ram Test"</string>
+    <string name="Copied">"Copy_"</string>
+    <string name="wifi">"wifi"</string>
+    <string name="wifiTitle">"wifi test"</string>
+	<string name="wifi_failed_connect_message">"wifi connection failed"</string>
+    <string name="bluetooth">"Bluetooth"</string>
+    <string name="bluetoothTitle">"Bluetooth test"</string>
+    <string name="ethernet">"Ethernet"</string>
+    <string name="ethernetTitle">"Ethernet test"</string>
+    <string name="Infrared">"Infrared test"</string>
+    <string name="infrared">"Infrared"</string>
+
+    <string name="mouse">"Touch screen"</string>
+    <string name="mouseTitle">"Touch screen test"</string>
+	<string name="mouseTip">"Operation tips bar"</string>
+    <string name="left">"Click on this button"</string>
+    <string name="right">"Long press this button"</string>
+    <string name="drag">"Touch screen"</string>
+
+    <string name="display">"Display"</string>
+    <string name="displayTitle">"Display test"</string>
+    <string name="displayOn">"Output DHMI"</string>
+    <string name="displayOff">"Break DHMI"</string>
+    <string name="currentResolution">"Current resolution"</string>
+	<string name="screenCheck">"Screen test"</string>
+    <string name="oneResolution">"576i"</string>
+    <string name="twoResolution">"480p"</string>
+    <string name="threeResolution">"576p"</string>
+    <string name="fourResolution">"720p50"</string>
+    <string name="fiveResolution">"720p60"</string>
+    <string name="sixResolution">"1080i50"</string>
+    <string name="sevenResolution">"1080i60"</string>
+    <string name="nineResolution">"1080p50"</string>
+    <string name="tenResolution">"1080p60"</string>
+
+	<string name="recorder">"Sound recording"</string>
+	<string name="recorderTitle">"Sound test"</string>
+
+	<string name="play">"Music"</string>
+	<string name="playTitle">"Music test"</string>
+
+	<string name="camera">"Camera"</string>
+	<string name="cameraTitle">"Camera test"</string>
+	<string name="cameraInfo">"Camera parameter"</string>
+
+	<string name="usbhost">"OTG"</string>
+	<string name="usbhostTitle">"OTG test"</string>
+
+	<string name="touchkey">"Key"</string>
+	<string name="touchkeyTitle">"Key test"</string>
+	<string name="touchkeyIndicates">"Click on key"</string>
+
+	<string name="gravity">"Gravity"</string>
+	<string name="gravityTitle">"Gravity induction test"</string>
+	<string name="gravityTip">"Please rotate the screen test gravity induction"</string>
+
+	<string name="earplug">"Earplug"</string>
+	<string name="earplugTitle">"Earplug test"</string>
+	<string name="lakala">"Lucia Lacarra"</string>
+	<string name="handsfree">"Handsfree"</string>
+
+	<string name="general">"Multi objective test"</string>
+    <string name="generalTitle">"general test"</string>
+    <string name="generalConnect">"start"</string>
+    <string name="generalTest">"stop"</string>
+    <string name="generalFirst">"Ram test result"</string>
+    <string name="generalSecond">"flash test result"</string>
+    <string name="generalThird">"SDcard test result"</string>
+	<string name="generalFourth">"OTG test result"</string>
+	<string name="generalFifth">"WIFI test result"</string>
+	<string name="generalSixth">"Bluetooth test resutl"</string>
+
+	<string name="report">"Test Report"</string>
+	<string name="ReportTitle">"Test Report"</string>
+    <string name="extsd_success_string">"External storage card test successful"</string>
+    <string name="extsd_failure_string">"External storage card test failed"</string>
+    <string name="extsd_not_exist_string">"No detectable external storage card"</string>
+    <string name="extsd_not_enopy_space_string">"External storage card does not have enough space"</string>
+    <string name="extsd_copy_error_string">"External storage card copy data error"</string>
+    <string name="sdcard_available_space">"Sdcard available space:"</string>
+    <string name="sdcard_total_capacity">"Sdcard total capacity:"</string>
+    <string name="being_test">"Being test..."</string>
+	<string name="usbhost_success_string">"USB test successful"</string>
+    <string name="usbhost_failure_string">"USB test failed"</string>
+    <string name="usbhost_not_exist_string">"No detectable U disc"</string>
+    <string name="usbhost_not_enopy_space_string">"USB does not have enough space"</string>
+    <string name="usbhost_copy_error_string">"USB copy data error"</string>
+    <string name="usbhost_available_space">"USB available space:"</string>
+    <string name="usbhost_total_capacity">"USB total capacity:"</string>
+    <string name="bluetooth_success">"Bluetooth test success"</string>
+	<string name="bluetooth_failed">"Bluetooth test failed"</string>
+    <string name="bluetooth_is_success">"Whether is the blutooth successful"</string>
+	<string name="yes">"Yes"</string>
+	<string name="no">"No"</string>
+    <string name="camera_success">"Camera test success"</string>
+	<string name="camera_failed">"Camera test failed"</string>
+    <string name="no_camera">"No camera "</string>
+	<string name="camera_test">"Camera test"</string>
+	<string name="million_pixels">"Million pixels"</string>
+    <string name="camera_is_success">"Whether is the camera successful"</string>
+    <string name="display_success">"Display test success"</string>
+	<string name="display_failed">"Display test failed"</string>
+    <string name="current_resolution">"Current resolution:"</string>
+	<string name="display_test">"Screen test (resolution:"</string>
+    <string name="display_is_success">"Whether is the display successful"</string>
+    <string name="lakala_success">"Lakala test success"</string>
+	<string name="lakala_failed">"Lakala test failed"</string>
+    <string name="no_pin">"No device insertion"</string>
+	<string name="three_pin">"Test three_pin device insertion"</string>
+    <string name="four_pin">"Test four_pin device insertion"</string>
+    <string name="earplug_is_success">"Whether is the earplug successful"</string>
+    <string name="memory_test_result">"Memory test result"</string>
+    <string name="flash_test_result">"Flash test result"</string>
+	<string name="sdcard_test_result">"Sdcard test result"</string>
+    <string name="u_disc_test_result">"U disc test resultn"</string>
+	<string name="gravity_success">"Gravity test success"</string>
+	<string name="gravity_failed">"Gravity test failed"</string>
+    <string name="gravity_is_success">"Whether is the gravity successful"</string>
+	<string name="memory_success_string">"Memory test successful"</string>
+    <string name="memory_not_enopy_space_string">"Memory does not have enough space"</string>
+    <string name="memory_copy_error_string">"Memory copy data error"</string>
+    <string name="memory_test">"Memory Test(total capacity:"</string>
+	<string name="recorder_success">"Recorder test success"</string>
+	<string name="recorder_failed">"Recorder test failed"</string>
+    <string name="recorder_is_success">"Whether is the recorder successful"</string>
+	<string name="music_success">"Music test success"</string>
+	<string name="music_failed">"Music test failed"</string>
+    <string name="music_is_success">"Whether is the music successful"</string>
+	<string name="touchscreen_success">"Touchscreen test success"</string>
+	<string name="touchscreen_failed">"Touchscreen test failed"</string>
+	<string name="tip_touchscreen">"Please all position as far as possible the touch screen to detect the presence of the dead"</string>
+	<string name="left_keydown">"Click this button to success"</string>
+	<string name="long_keydown">" Long click this button to success"</string>
+    <string name="touchscreen_is_success">"Whether is the touchscreen successful"</string>
+	<string name="nandflash_success_string">"Nandflash test success"</string>
+	<string name="nandflash_not_enopy_space_string">"Nandflash does not have enough space"</string>
+    <string name="nandflash_copy_error_string">"Nandflash copy data error"</string>
+	<string name="nandflash_no_memory_string">"Nandflash no memory"</string>
+	<string name="nandflash_no_access_string">"Nandflash does not access"</string>
+    <string name="nandflash_test">"Nandflash Test(total capacity:"</string>
+    <string name="volume_up_success">"Sound + test success"</string>
+	<string name="volume_down_failed">"Sound - test success"</string>
+    <string name="click_sound_button">"please click the sound button"</string>
+
+
+    <string name="serialport">"Serialport"</string>
+    
+	<string name="battery">"Battery"</string>
+    <string name="chargerAcOnline">"ChargerAcOnline:"</string>
+ 	<string name="chargerUsbOnline">"ChargerUsbOnline:"</string>
+	<string name="chargerWirelessOnline">"ChargerWirelessOnline:"</string>
+	<string name="batteryStatus">"BatteryStatus:"</string>
+	<string name="batteryHealth">"BatteryHealth:"</string>
+	<string name="batteryPresent">"BatteryPresent:"</string>
+	<string name="batteryLevel">"BatteryLevel:"</string>
+	<string name="batteryVoltage">"BatteryVoltage:"</string>
+	<string name="batteryCurrentNow">"BatteryCurrentNow:"</string>
+	<string name="batteryChargeCounter">"BatteryChargeCounter:"</string>
+	<string name="batteryTemperature">"BatteryTemperature:"</string>
+	<string name="batteryTechnology">"BatteryTechnology:"</string>
+	<string name="charger_yes">"Yes"</string>
+	<string name="charger_no">"No"</string>
+
+	
+	<string name="usb_version_">USB Version:</string>
+	<string name="speed_">Speed:</string>
+	<string name="protocol_">Protocol:</string>
+	<string name="maximum_power_">Maximum Power:</string>
+	<string name="serial_number_">Serial Number:</string>
+	<string name="address_">"Address        : "</string>
+	<string name="number_">"Number         : "</string>
+	<string name="direction_">"Direction      : "</string>
+	<string name="type_">"Type           : "</string>
+	<string name="poll_interval_">"Poll Interval  : "</string>
+	<string name="max_packet_size_">"Max Packet Size: "</string>
+	<string name="attributes_">"Attributes     : "</string>
+	<string name="none">None</string>
+	<string name="class_">Class:</string>
+	<string name="interface_">Interface #</string>
+	<string name="endpoint_">Endpoint:</string>
+	<string name="device_path_">Device Path:</string>
+	<string name="device_class_">Device Class:</string>
+	<string name="vendor_id_">"Vendor ID: "</string>
+	<string name="vendor_name_">"Vendor Name: "</string>
+	<string name="product_id_">"Product ID: "</string>
+	<string name="product_name_">"Product Name: "</string>
+	<string name="interfaces">Interfaces</string>
+	<string name="device_info">Device Info</string>
+	<string name="vendor_name_reported_">"Vendor Name (reported): "</string>
+	<string name="vendor_name_from_db_">"Vendor Name (from DB): "</string>
+	<string name="product_name_reported_">"Product Name (reported): "</string>
+	<string name="product_name_from_db_">"Product Name (from DB): "</string>
+	<string name="share_result_via">Share result via:</string>
+	<string name="logo">Logo</string>
+	<string name="additional_info">Additional Info</string>
+	<string name="label_empty_list">No devices detected.\nPlug a device in and hit refresh</string>
+	<string name="label_refresh">Refresh</string>
+	
+	<!-- repot list item title  -->
+	<string name="report_test_item_memory">Memory Test</string>
+	<string name="report_test_item_flash">Flash Test</string>
+	<string name="report_test_item_sdcard">Sdcard Test</string>
+	<string name="report_test_item_otg">OTG Test</string>
+	<string name="report_test_item_key">Key Test</string>
+	<string name="report_test_item_gravity">Gravity Test</string>
+	<string name="report_test_item_wifi">WIFI Test</string>
+	<string name="report_test_item_bluetooth">Bluetooth Test</string>
+	<string name="report_test_item_tp">TP Test</string>
+	<string name="report_test_item_camera">Camera Test</string>
+	<string name="report_test_item_display">Display Test</string>
+	<string name="report_test_item_audio">Audio Test</string>
+	<string name="report_test_item_recorder">Recorder Test</string>
+	<string name="report_test_item_earplug">Earplug Test</string>
+	
+	<string name="info_camera_pixels">Million Pixel</string>
+	<string name="info_no_camear">No Camera</string>
+</resources>

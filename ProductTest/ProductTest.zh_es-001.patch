@@ -1,0 +1,125 @@
+diff --git a/src/com/thtfit/test/CameraActivity.java b/src/com/thtfit/test/CameraActivity.java
+index 373afce..6daf532 100644
+--- a/src/com/thtfit/test/CameraActivity.java
++++ b/src/com/thtfit/test/CameraActivity.java
+@@ -30,9 +30,11 @@ public class CameraActivity extends Activity
+     private static String CAMERA = "Camera";
+     private static String CAMERA_YES ="Yes";
+ 	private static String CAMERA_NO ="No";
+-	private static String CAMERA_TEST ="摄像头测试";
++	//private static String CAMERA_TEST ="摄像头测试";
++	private static String CAMERA_TEST ="Camera test";
+ 	private static String CAMERA_IS_SUCCESS ="Whether is the camera successful";
+-    private static String CAMERA_PIXELS = "万像素";
++    //private static String CAMERA_PIXELS = "万像素";
++	private static String CAMERA_PIXELS = "Million pixel";
+ 
+ 	final private int okColor = Color.GREEN;
+ 	final private int errColor = Color.RED;
+diff --git a/src/com/thtfit/test/MemoryActivity.java b/src/com/thtfit/test/MemoryActivity.java
+index 093d5e7..1de304f 100644
+--- a/src/com/thtfit/test/MemoryActivity.java
++++ b/src/com/thtfit/test/MemoryActivity.java
+@@ -27,7 +27,8 @@ public class MemoryActivity extends Activity implements OnClickListener {
+ 	private static String MEMORY_SUCCESS_STRING = "内存测试成功";
+ 	private static String MEMORY_NOMEM_STRING = "没有足够的内存";
+ 	private static String MEMORY_COPY_ERROR_STRING = "内存拷贝数据错误";
+-	private static String MEMORY_TEST = "内存测试(内存总量:";
++	//private static String MEMORY_TEST = "内存测试(内存总量:";
++    private static String MEMORY_TEST = "Memory test(memory total:";
+ 	private static String TEST_RESULT ="测试结果";
+     private static String BEING_TEST ="正在测试中...";
+ 	private final int okColor = Color.GREEN;
+diff --git a/src/com/thtfit/test/NandflashActivity.java b/src/com/thtfit/test/NandflashActivity.java
+index 6bf5387..d297d52 100644
+--- a/src/com/thtfit/test/NandflashActivity.java
++++ b/src/com/thtfit/test/NandflashActivity.java
+@@ -24,7 +24,8 @@ public class NandflashActivity extends Activity implements OnClickListener {
+ 	private static String NANDFLASH_NOMEM_STRING = "没有足够的内存";
+ 	private static String NANDFLASH_EACCESS_STRING = "不能获取内部存储卡权限";
+ 	private static String NANDFLASH_COPY_ERROR_STRING = "拷贝数据到内部存储卡错误";
+-	private static String NANDFLASH_TEST = "flash测试(flash总量:";
++	//private static String NANDFLASH_TEST = "flash测试(flash总量:";
++    private static String NANDFLASH_TEST = "flash test(flash total:";
+ 	private static String TEST_RESULT = "测试结果";
+     private static String BEING_TEST = "正在测试中...";
+ 	private final int okColor = Color.GREEN;
+diff --git a/src/com/thtfit/test/ProductTest.java b/src/com/thtfit/test/ProductTest.java
+index 47d9c79..18b0e6f 100644
+--- a/src/com/thtfit/test/ProductTest.java
++++ b/src/com/thtfit/test/ProductTest.java
+@@ -27,52 +27,63 @@ public class ProductTest extends Application{
+ 
+ 		SdcardActivity.createHashTable(mTreeMap);
+ 		Map<String,Object> map3 =new HashMap<String,Object>();
+-		map3.put("title", "SD卡测试");
++		//map3.put("title", "SD卡测试");
++		map3.put("title", "SD test");
+ 		reportList.add(2, map3);
+ 
+ 		UsbhostActivity.createHashTable(mTreeMap);
+ 		Map<String,Object> map4 =new HashMap<String,Object>();
+-		map4.put("title", "OTG测试");
++		//map4.put("title", "OTG测试");
++		map4.put("title", "OTG test");
+ 		reportList.add(3, map4);
+ 
+ 		Map<String,Object> map5 =new HashMap<String,Object>();
+-		map5.put("title", "按键测试");
++		//map5.put("title", "按键测试");
++		map5.put("title", "Key test");
+ 		reportList.add(4, map5);
+ 
+ 		Map<String,Object> map6 =new HashMap<String,Object>();
+-		map6.put("title", "重力测试");
++		//map6.put("title", "重力测试");
++		map6.put("title", "Grivity test");
+ 		reportList.add(5, map6);
+ 
+ 		Map<String,Object> map7 =new HashMap<String,Object>();
+-		map7.put("title", "WIFI测试");
++		//map7.put("title", "WIFI测试");
++		map7.put("title", "WIFI test");
+ 		reportList.add(6, map7);
+ 
+ 		Map<String,Object> map8 =new HashMap<String,Object>();
+-		map8.put("title", "蓝牙测试");
++		//map8.put("title", "蓝牙测试");
++		map8.put("title", "Bluetooth test");
+ 		reportList.add(7, map8);
+ 
+ 		MouseActivity.createHashTable(mTreeMap);
+ 		Map<String,Object> map9 =new HashMap<String,Object>();
+-		map9.put("title", "触摸屏测试");
++		//map9.put("title", "触摸屏测试");
++		map9.put("title", "Touch screen test");
+ 		reportList.add(8, map9);
+ 
+ 		CameraActivity.createTitle(reportList, 9);
+ 
+ 		DisplayActivity.createHashTable(mTreeMap);
+ 		Map<String,Object> map11 =new HashMap<String,Object>();
+-		map11.put("title", "显示屏测试");
++		//map11.put("title", "显示屏测试");
++		map11.put("title", "Display test");
+ 		reportList.add(10, map11);
+ 
+ 		Map<String,Object> map12 =new HashMap<String,Object>();
+-		map12.put("title", "音乐测试");
++		//map12.put("title", "音乐测试");
++		map12.put("title", "Music test");
+ 		reportList.add(11, map12);
+ 
+ 		Map<String,Object> map13 =new HashMap<String,Object>();
+-		map13.put("title", "录音测试");
++		//map13.put("title", "录音测试");
++		map13.put("title", "Report test");
+ 		reportList.add(12, map13);
+ 
+ 		Map<String,Object> map14 =new HashMap<String,Object>();
+-		map14.put("title", "耳塞测试");
++		//map14.put("title", "耳塞测试");
++		map14.put("title", "Earplug test");
+ 		reportList.add(13, map14);
+ 	}
+ 	public String getTitle(int position)

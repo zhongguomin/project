@@ -1,0 +1,311 @@
+From 9aed93a440bca4180c18bf6509943312c39e258d Mon Sep 17 00:00:00 2001
+From: Gene <gene@thtfit.com>
+Date: Fri, 22 Aug 2014 19:20:05 +0800
+Subject: [PATCH] Optimize volume mount/unmount
+
+	relate repositories:
+	system/vold/
+	frameworks/av/
+---
+ DirectVolume.cpp  |    4 +-
+ Volume.cpp        |  154 +++++++++++++++++++++++++++++++++++++++++++++++++----
+ Volume.h          |    5 ++-
+ VolumeManager.cpp |    2 +-
+ 4 files changed, 151 insertions(+), 14 deletions(-)
+
+diff --git a/DirectVolume.cpp b/DirectVolume.cpp
+index c15eb8a..e5ffecd 100755
+--- a/DirectVolume.cpp
++++ b/DirectVolume.cpp
+@@ -316,7 +316,7 @@ void DirectVolume::handleDiskRemoved(const char *devpath, NetlinkEvent *evt) {
+              getLabel(), getFuseMountpoint(), major, minor);
+     mVm->getBroadcaster()->sendBroadcast(ResponseCode::VolumeDiskRemoved,
+                                              msg, false);
+-    Volume::unmountVol(true,true);
++    Volume::unmountVol(true,true,major,minor);
+     setState(Volume::State_NoMedia);
+ }
+ 
+@@ -355,7 +355,7 @@ void DirectVolume::handlePartitionRemoved(const char *devpath, NetlinkEvent *evt
+             SLOGE("Failed to cleanup ASEC - unmount will probably fail!");
+         }
+ 
+-        if (Volume::unmountVol(true, false)) {
++        if (Volume::unmountVol(true, false, major, minor)) {
+             SLOGE("Failed to unmount volume on bad removal (%s)", 
+                  strerror(errno));
+             // XXX: At this point we're screwed for now
+diff --git a/Volume.cpp b/Volume.cpp
+index bf11597..41b6218 100755
+--- a/Volume.cpp
++++ b/Volume.cpp
+@@ -339,7 +339,7 @@ int Volume::formatVol(bool wipe) {
+         return -1;
+     }
+ 
+-    if (isMountpointMounted(getMountpoint())) {
++    if (isMountpointMounted_2(getMountpoint())) {
+         SLOGW("Volume is idle but appears to be mounted - fixing");
+         setState(Volume::State_Mounted);
+         // mCurrentlyMountedKdev = XXX
+@@ -391,6 +391,7 @@ bool Volume::isMountpointMounted(const char *path) {
+         return false;
+     }
+ 
++	// line: /dev/block/vold/8:1 /mnt/usbhost1 vfat . . .
+     while(fgets(line, sizeof(line), fp)) {
+         line[strlen(line)-1] = '\0';
+         sscanf(line, "%255s %255s %255s\n", device, mount_path, rest);
+@@ -405,6 +406,55 @@ bool Volume::isMountpointMounted(const char *path) {
+     return false;
+ }
+ 
++bool Volume::isMountpointMounted_2(const char *mountPath) {
++	char device_path[256];
++	char mount_path[256];
++    FILE *fp = NULL;
++    char line[1024];
++	struct stat statBuf;
++	int major = -1, minor = -1;
++	int p_major = 0, p_minor = 0;
++	bool match = false;
++
++	// get device major, minor
++    if (!(fp = fopen("/proc/mounts", "r"))) {
++		SLOGE("Error opening /proc/mounts (%s)", strerror(errno));
++		return false;
++	}
++
++	// line: /dev/block/vold/8:1 /mnt/usbhost1 ...
++	while(fgets(line, sizeof(line), fp)) {
++		line[strlen(line)-1] = '\0';
++		sscanf(line, "%255s %255s\n", device_path, mount_path);
++		if (!strcmp(mount_path, mountPath)) {
++			if (stat(device_path, &statBuf) == 0) {
++				major = (statBuf.st_rdev & 0xFF00) >> 8; 
++				minor = (statBuf.st_rdev & 0xFF);
++			}
++		}
++	}
++
++	// major, minor match at /proc/partitions
++	if (!(fp = fopen("/proc/partitions", "r"))) {
++		SLOGE("Error opening /proc/partitions (%s)", strerror(errno));
++		return false;
++	}
++
++	// line: 93       72    4734976 nandj
++	while(fgets(line, sizeof(line), fp)) {
++		line[strlen(line)-1] = '\0';
++		sscanf(line, "%d %d", &p_major, &p_minor);
++		if(major == p_major && minor == p_minor) {
++			match = true;
++			break;
++		}
++	}
++
++    fclose(fp);
++	fp = NULL;
++	return match;
++}
++
+ int Volume::mountVol() {
+     dev_t deviceNodes[V_MAX_PARTITIONS];
+     int n, i, rc = 0;
+@@ -459,12 +509,15 @@ int Volume::mountVol() {
+         return -1;
+     }
+ 
+-    if (isMountpointMounted(getMountpoint())) {
++    if (isMountpointMounted_2(getMountpoint())) {
+         SLOGW("Volume is idle but appears to be mounted - fixing");
+         setState(Volume::State_Mounted);
+         // mCurrentlyMountedKdev = XXX
+         return 0;
+-    }
++    } else {
++		SLOGE("The device is removed ..!!");
++		umount(getMountpoint());
++	}
+ 
+     n = getDeviceNodes((dev_t *) &deviceNodes, V_MAX_PARTITIONS);
+     if (!n) {
+@@ -675,6 +728,87 @@ int Volume::mountAsecExternal() {
+     return 0;
+ }
+ 
++bool Volume::isPhysicalVolumeExist(const char *path, int major, int minor) {
++	int fd = -1;
++	char volumeNode[255]; 
++	FILE *fp = NULL;
++	char line[1024];
++	int p_major = 0, p_minor = 0;
++	bool match = false;
++
++	if (major == 0 && minor == 0)	return true;
++
++	memset(volumeNode, 0, 255);
++	sprintf(volumeNode, "/dev/block/vold/%d:%d", major, minor);
++	if ((fd = open(volumeNode, O_RDONLY)) < 0) {
++		SLOGE("Unable to open %s (%s)", volumeNode, strerror(errno));
++		return false;
++	}
++
++    if (!(fp = fopen("/proc/partitions", "r"))) {
++        SLOGE("Error opening /proc/partitions (%s)", strerror(errno));
++		close(fd);
++        return false;
++    }
++
++    while(fgets(line, sizeof(line), fp)) {
++        line[strlen(line)-1] = '\0';
++        sscanf(line, "%d %d", &p_major, &p_minor);
++        if(major == p_major && minor == p_minor) {
++            match = true;
++        }
++    }
++
++    if (!match) {
++        SLOGE("The device major, minor is not at /proc/partitions ..!! ");
++        fclose(fp);
++        fp = NULL;
++		close(fd);
++        return false;
++    }
++
++	fclose(fp);
++	fp = NULL;
++	close(fd);
++	return true;
++}
++
++int Volume::doUnmount_force(const char *path, bool force, int major, int minor) {
++	if (!umount(path) || errno == EINVAL || errno == ENOENT) {
++		SLOGI("%s sucessfully unmounted (the first)", path);
++		return 0;
++	}
++
++	Process::killProcessesWithOpenFiles(path, 1);	// SIGHUP
++	usleep(1000*1000);
++
++	if (!umount(path) || errno == EINVAL || errno == ENOENT) {
++		SLOGI("%s sucessfully unmounted (the second)", path);
++		return 0;
++	}
++
++	if (force) {
++		Process::killProcessesWithOpenFiles(path, 2);	// SIGKILL
++		usleep(1000*1000);
++	}
++
++	if (!umount(path) || errno == EINVAL || errno == ENOENT) {
++		SLOGI("%s sucessfully unmounted (the third)", path);
++		return 0;
++	} else {
++		if (!isPhysicalVolumeExist(path, major, minor)) {
++			SLOGE("The Physical Device is not Exist ..!!");
++			umount(path);		// try once
++			return 0;
++		}
++	}
++
++	SLOGW("Failed to unmount %s (%s)", path, strerror(errno));
++	errno = EBUSY;
++    SLOGE("Giving up on unmount %s (%s)", path, strerror(errno));
++    return -1;
++}
++
+ int Volume::doUnmount(const char *path, bool force) {
+     int retries = 10;
+ 
+@@ -709,8 +843,8 @@ int Volume::doUnmount(const char *path, bool force) {
+     return -1;
+ }
+ 
+-int Volume::unmountVol(bool force, bool revert) {
+-    int i, rc;
++int Volume::unmountVol(bool force, bool revert, int major, int minor) {
++	int i, rc;
+ 
+     int flags = getFlags();
+     bool providesAsec = (flags & VOL_PROVIDES_ASEC) != 0;
+@@ -722,18 +856,18 @@ int Volume::unmountVol(bool force, bool revert) {
+     }
+ 
+     setState(Volume::State_Unmounting);
+-    usleep(1000 * 1000); // Give the framework some time to react
++//    usleep(1000 * 1000); // Give the framework some time to react
+ 
+     char service[64];
+     snprintf(service, 64, "fuse_%s", getLabel());
+     property_set("ctl.stop", service);
+     /* Give it a chance to stop.  I wish we had a synchronous way to determine this... */
+-    sleep(1);
++ //   sleep(1);
+ 
+     // TODO: determine failure mode if FUSE times out
+ 
+     if (getMountpoint() != NULL && !strstr(getMountpoint(),"usb") && !strstr(getMountpoint(),"extsd")) {
+-        if (providesAsec && doUnmount(Volume::SEC_ASECDIR_EXT, force) != 0) {
++        if (providesAsec && doUnmount_force(Volume::SEC_ASECDIR_EXT, force, major, minor) != 0) {
+              SLOGE("Failed to unmount secure area on %s (%s)", getMountpoint(), strerror(errno));
+              goto out_mounted;
+         }
+@@ -745,7 +879,7 @@ int Volume::unmountVol(bool force, bool revert) {
+     if (mPartIdx == -1 && mMountedPartNum > 1) {
+         for (i = 0; i < mMountedPartNum; i++) {
+             if (mMountPart[i]) {
+-                if (doUnmount(mMountPart[i], force)) {
++                if (doUnmount_force(mMountPart[i], force, major, minor)) {
+                     SLOGE("Failed to unmount %s (%s)", mMountPart[i], strerror(errno));
+                     goto fail_remount_secure;
+                 }
+@@ -759,7 +893,7 @@ int Volume::unmountVol(bool force, bool revert) {
+         }
+     }
+         /* Now that the fuse daemon is dead, unmount it */
+-    if (doUnmount(getFuseMountpoint(), force) != 0) {
++    if (doUnmount_force(getFuseMountpoint(), force, major, minor) != 0) {
+         SLOGE("Failed to unmount %s (%s)", getFuseMountpoint(), strerror(errno));
+         goto fail_remount_secure;
+     }
+diff --git a/Volume.h b/Volume.h
+index d51fa6a..9761da2 100755
+--- a/Volume.h
++++ b/Volume.h
+@@ -71,7 +71,7 @@ public:
+     virtual ~Volume();
+ 
+     int mountVol();
+-    int unmountVol(bool force, bool revert);
++    int unmountVol(bool force, bool revert, int major, int minor);
+     int formatVol(bool wipe);
+     int shareVol(int lun);
+     int unshareVol();
+@@ -107,7 +107,10 @@ protected:
+ private:
+     int initializeMbr(const char *deviceNode);
+     bool isMountpointMounted(const char *path);
++    bool isMountpointMounted_2(const char *path);
+     int mountAsecExternal();
++	bool isPhysicalVolumeExist(const char *path, int major, int minor);
++	int doUnmount_force(const char *path, bool force, int major, int minor);
+     int doUnmount(const char *path, bool force);
+     void protectFromAutorunStupidity();
+ 
+diff --git a/VolumeManager.cpp b/VolumeManager.cpp
+index 49f70ac..f65d315 100755
+--- a/VolumeManager.cpp
++++ b/VolumeManager.cpp
+@@ -1438,7 +1438,7 @@ int VolumeManager::unmountVolume(const char *label, bool force, bool revert) {
+ 
+     cleanupAsec(v, force);
+ 
+-    return v->unmountVol(force, revert);
++    return v->unmountVol(force, revert, 0, 0);
+ }
+ 
+ extern "C" int vold_unmountAllAsecs(void) {
+-- 
+1.7.0.4
+

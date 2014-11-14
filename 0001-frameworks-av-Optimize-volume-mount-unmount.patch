@@ -1,0 +1,181 @@
+From 3a31b51d9894a86bfee63fa108e0153862b5e7a0 Mon Sep 17 00:00:00 2001
+From: Gene <gene@thtfit.com>
+Date: Fri, 22 Aug 2014 19:28:38 +0800
+Subject: [PATCH] Optimize volume mount/unmount
+
+	relate repositories:
+	system/vold/
+	frameworks/av/
+---
+ include/media/mediascanner.h    |    3 +-
+ media/libmedia/MediaScanner.cpp |  128 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 130 insertions(+), 1 deletions(-)
+
+diff --git a/include/media/mediascanner.h b/include/media/mediascanner.h
+index a73403b..471b99a 100644
+--- a/include/media/mediascanner.h
++++ b/include/media/mediascanner.h
+@@ -72,7 +72,8 @@ private:
+             struct dirent* entry, char* fileSpot);
+     void loadSkipList();
+     bool shouldSkipDirectory(char *path);
+-
++	bool isBlockDeviceExistByPath(const char *path);
++	bool closeFileAtRemovedBlockDevice();
+ 
+     MediaScanner(const MediaScanner &);
+     MediaScanner &operator=(const MediaScanner &);
+diff --git a/media/libmedia/MediaScanner.cpp b/media/libmedia/MediaScanner.cpp
+index 28b5aa7..010538a 100644
+--- a/media/libmedia/MediaScanner.cpp
++++ b/media/libmedia/MediaScanner.cpp
+@@ -24,6 +24,15 @@
+ #include <sys/stat.h>
+ #include <dirent.h>
+ 
++#include <fcntl.h> 
++#include <stdio.h>
++#include <stdlib.h>
++#include <sys/types.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <string.h>
++
++
+ namespace android {
+ 
+ MediaScanner::MediaScanner()
+@@ -187,6 +196,24 @@ MediaScanResult MediaScanner::doProcessDirectoryEntry(
+     }
+     strcpy(fileSpot, name);
+ 
++	// determine the path weather exist
++	int fd = -1;
++	if ((fd = open(path, O_RDONLY) < 0)) {
++		if (errno == ENODEV || errno == ENXIO ) {
++			ALOGE("Open Error (path = %s, errno = %d ), so quit scan directory ..!!", path, errno);
++			return MEDIA_SCAN_RESULT_ERROR;
++		} else if (errno == ENOENT) {
++			if (!isBlockDeviceExistByPath(path)) {
++				closeFileAtRemovedBlockDevice();
++				SLOGE("The block device is not exist, so quit scan directory..!!");
++				return MEDIA_SCAN_RESULT_ERROR;
++			}
++		}
++	} else {
++		close(fd);
++		fd = -1;
++	}
++
+     int type = entry->d_type;
+     if (type == DT_UNKNOWN) {
+         // If the type is unknown, stat() the file instead.
+@@ -237,4 +264,105 @@ MediaScanResult MediaScanner::doProcessDirectoryEntry(
+     return MEDIA_SCAN_RESULT_OK;
+ }
+ 
++bool MediaScanner::closeFileAtRemovedBlockDevice() {
++    char openPath[PATH_MAX];
++    char openFile[PATH_MAX];
++    DIR *dir;
++    struct dirent *de;
++
++    memset(openPath, 0, PATH_MAX);
++    sprintf(openPath, "/proc/%d/fd", getpid());
++
++    int parent_length = strlen(openPath); 
++    openPath[parent_length++] = '/'; 
++
++    if (!(dir = opendir(openPath))) {
++        SLOGE("error: opendir %s faild", openPath);   
++        return false;
++    }
++
++    while ((de = readdir(dir))) {
++        if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")) {
++            continue;
++        }
++
++        openPath[parent_length] = 0; 
++        strcat(openPath, de->d_name);
++        char link[PATH_MAX]; 
++        struct stat s;
++        int length = 0;
++
++        if (lstat(openPath, &s) == 0) {
++            if ((s.st_mode & S_IFMT) == S_IFLNK) {
++                length = readlink(openPath, link, PATH_MAX - 1);
++                // if (length <= 0) 
++                link[length] = 0;
++
++                memset(openFile, 0, PATH_MAX);
++                strncpy(openFile, link, PATH_MAX-1);
++
++				char extsdPath[16] = "/mnt/extsd/";
++				char usbPath[16] = "/mnt/usbhost1/";
++
++                if ( (!strncmp(openFile, extsdPath, strlen(extsdPath))) ||
++						(!strncmp(openFile, usbPath, strlen(usbPath))) ) {
++                    if (close(atoi(de->d_name))) {
++                        SLOGE("close %s error: %s [%d]", openFile, strerror(errno), errno);
++                    } else {
++                        SLOGI("sucess  close %s [%s]", openFile, de->d_name);           
++                    }
++                }
++            }
++        }
++    }
++
++    closedir(dir);
++	return true;
++}
++
++bool MediaScanner::isBlockDeviceExistByPath(const char *path) {
++    FILE *fp = NULL;
++    char line[1024];
++	int major = -1, minor = -1;
++	int p_major = 0, p_minor = 0;
++	bool match = false;
++    struct stat statBuf;
++
++	// get device major, minor
++	if (stat(path, &statBuf) == 0) {
++        major = (statBuf.st_dev & 0xFF00) >> 8;
++        minor = (statBuf.st_dev & 0xFF);
++	}
++
++	// skip the 0:1 (mount point is "/")
++	if (major == 0) {
++		major = -1;
++		minor = -1;
++	}
++
++    if (!(fp = fopen("/proc/partitions", "r"))) {
++        SLOGE("Error opening /proc/partitions (%s)", strerror(errno));
++        return false;
++    }
++
++    while(fgets(line, sizeof(line), fp)) {
++        line[strlen(line)-1] = '\0';
++        sscanf(line, "%d %d", &p_major, &p_minor);
++		if(major == p_major && minor == p_minor) {
++			match = true;
++		}
++	}
++
++	if (!match) {
++		SLOGE("The device major, minor is not at /proc/partitions ..!!");
++		fclose(fp);
++		fp = NULL;
++		return false;
++	}
++
++    fclose(fp);
++	fp = NULL;
++    return true;
++}
++
+ }  // namespace android
+-- 
+1.7.0.4
+
